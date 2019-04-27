@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void addButton(final State state){
+    private void addButton(final BaseState state){
         Button button=new Button(this);
         button.setText(state.getName());
         button.setOnClickListener(new View.OnClickListener() {
@@ -34,20 +34,24 @@ public class MainActivity extends AppCompatActivity {
               /*  Message message=new Message();
                 message.obj=state.getName();
                 machine.sendMessage(message);*/
-              machine.transitionTo(state);
+//              machine.transitionTo(state);
+//              machine.deferMessage(machine.obtainMessage(1));
+              machine.sendMessage(machine.obtainMessage(state.getCmd()));
             }
         });
         root.addView(button,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
 
     }
 
+    StateA stateA=new StateA();
+    StateB stateB=new StateB();
+    StateC stateC=new StateC();
+    StateA_1 stateA1=new StateA_1();
+    StateA_2 stateA2=new StateA_2();
+
     private void initStateMachine(){
         machine=new MyStateMachine("myMachine1");
-        StateA stateA=new StateA();
-        StateB stateB=new StateB();
-        StateC stateC=new StateC();
-        StateA_1 stateA1=new StateA_1();
-        StateA_2 stateA2=new StateA_2();
+
         addButton(stateA);
         addButton(stateB);
         addButton(stateC);
@@ -69,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
 
     public class BaseState extends State {
 
+        public final static int CMD1=1;
+        public final static int CMD2=2;
+        public final static int CMD3=3;
+        public final static int CMD4=4;
+        public final static int CMD5=5;
+        public final static int CMD6=6;
+        public final static int CMD7=7;
+
+        public int getCmd(){
+            return 0;
+        }
+
 
         @Override
         public void enter() {
@@ -82,30 +98,64 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean processMessage(Message msg) {
-            showToast(getName()+"---processMessage");
-            return super.processMessage(msg);
+//            showToast(getName()+"---processMessage");
+            if(msg.what==CMD1){
+                machine.transitionTo(stateA);
+                return HANDLED;
+            }else if(msg.what==CMD2){
+                machine.transitionTo(stateB);
+                return HANDLED;
+            }else if(msg.what==CMD3){
+                machine.transitionTo(stateC);
+                return HANDLED;
+            }else if(msg.what==CMD4){
+                machine.transitionTo(stateA1);
+                return HANDLED;
+            }else if(msg.what==CMD5){
+                machine.transitionTo(stateA2);
+                return HANDLED;
+            }
+            return NOT_HANDLED;
         }
     }
 
     public class StateA extends BaseState {
 
-
+        @Override
+        public int getCmd() {
+            return CMD1;
+        }
     }
 
     public class StateA_1 extends BaseState {
-
+        @Override
+        public int getCmd() {
+            return CMD4;
+        }
 
     }
 
     public class StateA_2 extends BaseState {
+        @Override
+        public int getCmd() {
+            return CMD5;
+        }
 
     }
 
     public class StateB extends BaseState {
+        @Override
+        public int getCmd() {
+            return CMD2;
+        }
 
     }
 
     public class StateC extends BaseState {
+        @Override
+        public int getCmd() {
+            return CMD3;
+        }
 
     }
 }
